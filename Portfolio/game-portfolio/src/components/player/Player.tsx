@@ -8,7 +8,7 @@ export default function Player() {
   const [isJumping, setIsJumping] = useState(false);
   const [velocity, setVelocity] = useState(0);
   const movementSpeed = 1;
-  const initialJumpVelocity = 25;
+  const initialJumpVelocity = 30;
   const gravity = 2;
 
   // Update the position based on key presses
@@ -62,7 +62,7 @@ export default function Player() {
       });
     };
 
-    const interval = setInterval(move, 15);
+    const interval = setInterval(move, 10);
 
     return () => clearInterval(interval);
   }, [isMovingLeft, isMovingRight]);
@@ -84,7 +84,7 @@ export default function Player() {
 
           return newYPosition;
         });
-      }, 20);
+      }, 10);
 
       return () => clearInterval(jumpInterval);
     }
