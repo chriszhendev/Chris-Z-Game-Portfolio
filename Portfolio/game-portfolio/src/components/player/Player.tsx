@@ -6,7 +6,10 @@ export default function Player() {
   const [isMovingLeft, setIsMovingLeft] = useState(false);
   const [isMovingRight, setIsMovingRight] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
-  const movementSpeed = 2;
+  const [velocity, setVelocity] = useState(0);
+  const movementSpeed = 1;
+  const initialJumpVelocity = 25;
+  const gravity = 2;
 
   // Update the position based on key presses
   useEffect(() => {
@@ -17,8 +20,9 @@ export default function Player() {
       if (event.key === "d" || event.key === "D") {
         setIsMovingRight(true);
       }
-      if (event.key === " " && isJumping === false) {
+      if (event.key === " " && !isJumping && yPosition === 0) {
         setIsJumping(true);
+        setVelocity(initialJumpVelocity);
         console.log("SPACE PRESSED");
       }
     };
@@ -39,9 +43,8 @@ export default function Player() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [isJumping, yPosition]);
 
-  // Move the element left or right
   useEffect(() => {
     const move = () => {
       setXPosition((prevPosition) => {
@@ -59,14 +62,37 @@ export default function Player() {
       });
     };
 
-    const interval = setInterval(move, 20); // Update every 20ms
+    const interval = setInterval(move, 15);
 
     return () => clearInterval(interval);
   }, [isMovingLeft, isMovingRight]);
 
+  // Handle the jump and gravity
+  useEffect(() => {
+    if (isJumping) {
+      const jumpInterval = setInterval(() => {
+        setYPosition((prevYPosition) => {
+          const newVelocity = velocity - gravity;
+          setVelocity(newVelocity);
+          const newYPosition = Math.max(prevYPosition + newVelocity, 0);
+
+          if (newYPosition === 0) {
+            setIsJumping(false);
+            setVelocity(0);
+            clearInterval(jumpInterval);
+          }
+
+          return newYPosition;
+        });
+      }, 20);
+
+      return () => clearInterval(jumpInterval);
+    }
+  }, [isJumping, velocity]);
+
   return (
     <div
-      style={{ left: `${xPosition}%`, bottom: `${yPosition}` }}
+      style={{ left: `${xPosition}%`, bottom: `${yPosition}px` }}
       className="absolute w-16 h-16 bg-blue-500"
     >
       {/* The movable box */}
