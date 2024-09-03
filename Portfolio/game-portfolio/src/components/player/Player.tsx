@@ -5,6 +5,7 @@ export default function Player() {
   const [yPosition, setYPosition] = useState(0);
   const [isMovingLeft, setIsMovingLeft] = useState(false);
   const [isMovingRight, setIsMovingRight] = useState(false);
+  const [isJumping, setIsJumping] = useState(false);
   const movementSpeed = 2;
 
   // Update the position based on key presses
@@ -15,6 +16,10 @@ export default function Player() {
       }
       if (event.key === "d" || event.key === "D") {
         setIsMovingRight(true);
+      }
+      if (event.key === " " && isJumping === false) {
+        setIsJumping(true);
+        console.log("SPACE PRESSED");
       }
     };
 
