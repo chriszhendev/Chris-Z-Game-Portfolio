@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../../store/hooks";
+import { RootState } from "../../store/store";
 
 export default function Player() {
   const [xPosition, setXPosition] = useState(50);
@@ -10,6 +12,36 @@ export default function Player() {
   const movementSpeed = 1;
   const initialJumpVelocity = 30;
   const gravity = 2;
+
+  const blocks = useAppSelector((state: RootState) => state.blocks.blocks);
+
+  const checkCollision = (
+    newXPosition: number,
+    newYPosition: number,
+    direction: "horizontal" | "vertical"
+  ) => {
+    for (const block of blocks) {
+      const withinXBounds =
+        newXPosition + 16 >= block.x && newXPosition <= block.x + block.width;
+      const withinYBounds =
+        newYPosition <= block.y + block.height && newYPosition + 16 >= block.y;
+
+      if (withinXBounds && withinYBounds) {
+        if (direction === "horizontal") {
+          return true; // Stop horizontal movement
+        }
+        if (direction === "vertical") {
+          if (newYPosition < block.y) {
+            setIsJumping(false);
+            return block.y + block.height; // Place player on top of the block
+          } else {
+            return newYPosition; // Stop vertical movement
+          }
+        }
+      }
+    }
+    return direction === "vertical" ? newYPosition : false;
+  };
 
   // Update the position based on key presses
   useEffect(() => {
