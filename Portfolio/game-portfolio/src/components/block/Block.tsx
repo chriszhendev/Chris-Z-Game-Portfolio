@@ -13,8 +13,9 @@ export function Block({ x, y, width, height }: BlockProps) {
         bottom: `${y}px`,
         width: `${width}px`,
         height: `${height}px`,
+        backgroundColor: "red",
       }}
-      className="absolute bg-gray-700"
+      className="absolute collisionBox"
     />
   );
 }

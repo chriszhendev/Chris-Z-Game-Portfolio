@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store/store";
 
@@ -9,39 +9,73 @@ export default function Player() {
   const [isMovingRight, setIsMovingRight] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
   const [velocity, setVelocity] = useState(0);
+  const [collidedTop, setCollidedTop] = useState(false);
+  const [collidedBottom, setCollidedBottom] = useState(false);
+  const [collidedLeft, setCollidedLeft] = useState(false);
+  const [collidedRight, setCollidedRight] = useState(false);
   const movementSpeed = 1;
   const initialJumpVelocity = 30;
   const gravity = 2;
 
-  const blocks = useAppSelector((state: RootState) => state.blocks.blocks);
+  const checkCollision = useCallback((): void => {
+    console.log("CHECKING COLLISION");
 
-  const checkCollision = (
-    newXPosition: number,
-    newYPosition: number,
-    direction: "horizontal" | "vertical"
-  ) => {
-    for (const block of blocks) {
-      const withinXBounds =
-        newXPosition + 16 >= block.x && newXPosition <= block.x + block.width;
-      const withinYBounds =
-        newYPosition <= block.y + block.height && newYPosition + 16 >= block.y;
+    // Reset collision states
+    setCollidedTop(false);
+    setCollidedBottom(false);
+    setCollidedLeft(false);
+    setCollidedRight(false);
 
-      if (withinXBounds && withinYBounds) {
-        if (direction === "horizontal") {
-          return true; // Stop horizontal movement
-        }
-        if (direction === "vertical") {
-          if (newYPosition < block.y) {
-            setIsJumping(false);
-            return block.y + block.height; // Place player on top of the block
-          } else {
-            return newYPosition; // Stop vertical movement
+    // Get player and block elements by their id or class name
+    const playerElement = document.getElementById("player");
+    const blockElements = document.getElementsByClassName("collisionBox");
+
+    if (playerElement && blockElements.length > 0) {
+      // Get the player's bounding rectangle
+      const playerRect = playerElement.getBoundingClientRect();
+
+      // Loop through all blocks to check for collision
+      Array.from(blockElements).forEach((blockElement) => {
+        const blockRect = blockElement.getBoundingClientRect();
+
+        // Check for collision using the bounding rectangles
+        if (
+          playerRect.left < blockRect.right &&
+          playerRect.right > blockRect.left &&
+          playerRect.top < blockRect.bottom &&
+          playerRect.bottom > blockRect.top
+        ) {
+          console.log("Collision detected!");
+
+          // Update collision states based on position
+          if (
+            playerRect.bottom > blockRect.top &&
+            playerRect.top < blockRect.top
+          ) {
+            setCollidedBottom(true);
+          }
+          if (
+            playerRect.top < blockRect.bottom &&
+            playerRect.bottom > blockRect.bottom
+          ) {
+            setCollidedTop(true);
+          }
+          if (
+            playerRect.right > blockRect.left &&
+            playerRect.left < blockRect.left
+          ) {
+            setCollidedRight(true);
+          }
+          if (
+            playerRect.left < blockRect.right &&
+            playerRect.right > blockRect.right
+          ) {
+            setCollidedLeft(true);
           }
         }
-      }
+      });
     }
-    return direction === "vertical" ? newYPosition : false;
-  };
+  }, [setCollidedTop, setCollidedBottom, setCollidedLeft, setCollidedRight]);
 
   // Update the position based on key presses
   useEffect(() => {
@@ -78,15 +112,24 @@ export default function Player() {
   }, [isJumping, yPosition]);
 
   useEffect(() => {
+    console.log("MOVING LEFT AND RIGHT");
+
     const move = () => {
       setXPosition((prevPosition) => {
         let newPosition = prevPosition;
 
-        if (isMovingLeft) {
+        // Only check for collision when actually moving
+        if (isMovingLeft || isMovingRight) {
+          checkCollision();
+        }
+
+        // Move left if not colliding with left side
+        if (isMovingLeft && !collidedLeft) {
           newPosition = Math.max(prevPosition - movementSpeed, 0);
         }
 
-        if (isMovingRight) {
+        // Move right if not colliding with right side
+        if (isMovingRight && !collidedRight) {
           newPosition = Math.min(prevPosition + movementSpeed, 100);
         }
 
@@ -94,13 +137,23 @@ export default function Player() {
       });
     };
 
+    // Run the movement function at a set interval
     const interval = setInterval(move, 10);
 
+    // Clean up interval on component unmount or effect re-run
     return () => clearInterval(interval);
-  }, [isMovingLeft, isMovingRight]);
+  }, [
+    isMovingLeft,
+    isMovingRight,
+    collidedLeft,
+    collidedRight,
+    movementSpeed,
+    checkCollision,
+  ]);
 
   // Handle the jump and gravity
   useEffect(() => {
+    console.log("MOVING UP AND DOWN");
     if (isJumping) {
       const jumpInterval = setInterval(() => {
         setYPosition((prevYPosition) => {
@@ -124,6 +177,7 @@ export default function Player() {
 
   return (
     <div
+      id="player"
       style={{ left: `${xPosition}%`, bottom: `${yPosition}px` }}
       className="absolute w-16 h-16 bg-blue-500"
     >
