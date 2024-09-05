@@ -179,7 +179,7 @@ export default function Player() {
     <div
       id="player"
       style={{ left: `${xPosition}%`, bottom: `${yPosition}px` }}
-      className="absolute w-16 h-16 bg-blue-500"
+      className="absolute w-[50px] h-[50px] bg-blue-500"
     >
       {/* The movable box */}
     </div>

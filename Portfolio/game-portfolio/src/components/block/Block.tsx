@@ -10,7 +10,7 @@ export function Block({ x, y, width, height }: BlockProps) {
     <div
       style={{
         left: `${x}%`,
-        bottom: `${y}px`,
+        bottom: `${y}%`,
         width: `${width}px`,
         height: `${height}px`,
         backgroundColor: "red",
