@@ -4,10 +4,9 @@ import { createPlayer } from "../player/player";
 import { createLevel1 } from "../level1/level1";
 import { handlePlayerMovement } from "../player/playerController";
 
-const Game: React.FC = () => {
+const MatterJSScene: React.FC = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [player, setPlayer] = useState<Matter.Body | null>(null);
-  const aspectRatio = 16 / 9; // Define the aspect ratio
 
   useEffect(() => {
     const Engine = Matter.Engine,
@@ -17,22 +16,7 @@ const Game: React.FC = () => {
 
     // Create an engine
     const engine = Engine.create();
-
     engine.gravity.y = 9;
-
-    // Function to update canvas size
-    const updateCanvasSize = (render: Matter.Render) => {
-      const width = window.innerWidth;
-      const height = window.innerWidth / aspectRatio;
-
-      // Update render options and canvas dimensions
-      render.options.width = width;
-      render.options.height = height;
-
-      // Update the canvas size
-      render.canvas.width = width;
-      render.canvas.height = height;
-    };
 
     // Create a renderer and attach it to the scene div
     const render = Render.create({
@@ -40,23 +24,18 @@ const Game: React.FC = () => {
       engine: engine,
       options: {
         width: window.innerWidth, // Set initial width to screen width
-        height: window.innerWidth / aspectRatio, // Set initial height based on aspect ratio
+        height: window.innerHeight, // Set initial height to screen height
         wireframes: false,
       },
     });
-
-    // Update canvas size based on initial screen dimensions
-    updateCanvasSize(render);
 
     // Create the player
     const playerBody = createPlayer();
     setPlayer(playerBody);
 
-    // Create the ground and walls
-    const walls = createLevel1();
-
-    // Add bodies to the world
-    Composite.add(engine.world, [playerBody, ...walls]);
+    // Add player and level (ground and walls) to the world
+    createLevel1(engine);
+    Composite.add(engine.world, [playerBody]);
 
     // Run the renderer
     Render.run(render);
@@ -68,8 +47,53 @@ const Game: React.FC = () => {
     // Handle player movement
     const cleanupPlayerControls = handlePlayerMovement(playerBody, engine);
 
-    // Update the canvas size on window resize
-    const handleResize = () => updateCanvasSize(render);
+    // Function to check if the player is outside the screen bounds and reposition it
+    const checkAndTeleportPlayer = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      if (playerBody) {
+        const playerX = playerBody.position.x;
+        const playerY = playerBody.position.y;
+
+        // Check if player is outside screen bounds
+        const playerOutsideScreen =
+          playerX < 0 ||
+          playerX > screenWidth ||
+          playerY < 0 ||
+          playerY > screenHeight;
+
+        if (playerOutsideScreen) {
+          // Reposition player to the middle of the screen
+          Matter.Body.setPosition(playerBody, {
+            x: screenWidth / 2,
+            y: screenHeight / 2,
+          });
+
+          // Reset player's velocity to stop any further movement
+          Matter.Body.setVelocity(playerBody, { x: 0, y: 0 });
+        }
+      }
+    };
+
+    // Check player position continuously
+    const update = () => {
+      checkAndTeleportPlayer(); // Continuously check if player is off-screen
+      requestAnimationFrame(update); // Keep checking every frame
+    };
+
+    update(); // Start checking
+
+    // Update the level (ground and walls) when the window is resized
+    const handleResize = () => {
+      render.options.width = window.innerWidth;
+      render.options.height = window.innerHeight;
+      render.canvas.width = window.innerWidth;
+      render.canvas.height = window.innerHeight;
+
+      createLevel1(engine); // Recalculate level dimensions
+    };
+
     window.addEventListener("resize", handleResize);
 
     // Clean up when component unmounts
@@ -82,7 +106,7 @@ const Game: React.FC = () => {
       cleanupPlayerControls();
       window.removeEventListener("resize", handleResize);
     };
-  }, [aspectRatio]);
+  }, []);
 
   return (
     <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
@@ -91,4 +115,4 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+export default MatterJSScene;

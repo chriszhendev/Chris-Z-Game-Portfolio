@@ -5,7 +5,7 @@ export const handlePlayerMovement = (
   engine: Matter.Engine
 ) => {
   const velocity = 20; // Horizontal speed
-  const jumpVelocity = -30; // Jump impulse speed (negative for upward movement)
+  const jumpVelocity = -35; // Jump impulse speed (negative for upward movement)
   const keysPressed: { [key: string]: boolean } = {};
   let isGrounded = false; // Track if the player is on the ground
 
@@ -36,9 +36,13 @@ export const handlePlayerMovement = (
     let xVelocity = 0;
 
     // Horizontal movement
-    if (keysPressed["ArrowLeft"] || keysPressed["a"]) {
+    if (keysPressed["ArrowLeft"] || keysPressed["a"] || keysPressed["A"]) {
       xVelocity = -velocity;
-    } else if (keysPressed["ArrowRight"] || keysPressed["d"]) {
+    } else if (
+      keysPressed["ArrowRight"] ||
+      keysPressed["d"] ||
+      keysPressed["D"]
+    ) {
       xVelocity = velocity;
     }
 
