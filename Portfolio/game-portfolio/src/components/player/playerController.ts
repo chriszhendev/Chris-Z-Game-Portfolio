@@ -1,14 +1,28 @@
 import Matter from "matter-js";
 
-export const handlePlayerMovement = (player: Matter.Body) => {
-  const velocity = 20;
+export const handlePlayerMovement = (
+  player: Matter.Body,
+  engine: Matter.Engine
+) => {
+  const velocity = 20; // Horizontal speed
+  const jumpVelocity = -30; // Jump impulse speed (negative for upward movement)
   const keysPressed: { [key: string]: boolean } = {};
+  let isGrounded = false; // Track if the player is on the ground
 
   // Handle key down
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!player) return;
 
     keysPressed[event.key] = true;
+
+    // Jump when space is pressed and the player is grounded
+    if (event.key === " " && isGrounded) {
+      Matter.Body.setVelocity(player, {
+        x: player.velocity.x,
+        y: jumpVelocity,
+      });
+      isGrounded = false; // The player is no longer grounded after jumping
+    }
   };
 
   // Handle key up
@@ -20,24 +34,27 @@ export const handlePlayerMovement = (player: Matter.Body) => {
 
   const updatePlayerMovement = () => {
     let xVelocity = 0;
-    let yVelocity = 2;
 
+    // Horizontal movement
     if (keysPressed["ArrowLeft"] || keysPressed["a"]) {
       xVelocity = -velocity;
     } else if (keysPressed["ArrowRight"] || keysPressed["d"]) {
       xVelocity = velocity;
     }
 
-    if (keysPressed["ArrowUp"] || keysPressed["w"]) {
-      yVelocity = -velocity;
-    } else if (keysPressed["ArrowDown"] || keysPressed["s"]) {
-      yVelocity = velocity;
+    // Only set the horizontal velocity (vertical velocity will be handled by jumping/gravity)
+    if (xVelocity !== player.velocity.x) {
+      Matter.Body.setVelocity(player, { x: xVelocity, y: player.velocity.y });
     }
 
-    // Only set the velocity if it's different from the current velocity
-    if (xVelocity !== player.velocity.x || yVelocity !== player.velocity.y) {
-      Matter.Body.setVelocity(player, { x: xVelocity, y: yVelocity });
-    }
+    // Check if the player is grounded by detecting collisions with the ground or static bodies
+    const allCollisions = Matter.Query.collides(
+      player,
+      Matter.Composite.allBodies(engine.world)
+    );
+    isGrounded = allCollisions.some(
+      (collision) => collision.bodyB.isStatic || collision.bodyA.isStatic
+    ); // The player is grounded if colliding with a static body
 
     requestAnimationFrame(updatePlayerMovement); // Loop the update
   };
