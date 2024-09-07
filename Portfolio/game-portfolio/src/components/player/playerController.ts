@@ -2,75 +2,67 @@ import Matter from "matter-js";
 
 export const handlePlayerMovement = (
   player: Matter.Body,
-  engine: Matter.Engine
+  engine: Matter.Engine,
+  flipPlayer: (isFlipped: boolean) => void // Pass the flip callback
 ) => {
-  const velocity = 20; // Horizontal speed
-  const jumpVelocity = -35; // Jump impulse speed (negative for upward movement)
+  const velocity = 20;
+  const jumpVelocity = -35;
   const keysPressed: { [key: string]: boolean } = {};
-  let isGrounded = false; // Track if the player is on the ground
+  let isGrounded = false;
 
-  // Handle key down
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!player) return;
-
     keysPressed[event.key] = true;
 
-    // Jump when space is pressed and the player is grounded
     if (event.key === " " && isGrounded) {
       Matter.Body.setVelocity(player, {
         x: player.velocity.x,
         y: jumpVelocity,
       });
-      isGrounded = false; // The player is no longer grounded after jumping
+      isGrounded = false;
     }
   };
 
-  // Handle key up
   const handleKeyUp = (event: KeyboardEvent) => {
     if (!player) return;
-
     keysPressed[event.key] = false;
   };
 
   const updatePlayerMovement = () => {
     let xVelocity = 0;
 
-    // Horizontal movement
     if (keysPressed["ArrowLeft"] || keysPressed["a"] || keysPressed["A"]) {
       xVelocity = -velocity;
+      flipPlayer(true); // Flip player when moving left
     } else if (
       keysPressed["ArrowRight"] ||
       keysPressed["d"] ||
       keysPressed["D"]
     ) {
       xVelocity = velocity;
+      flipPlayer(false); // Reset flip when moving right
     }
 
-    // Only set the horizontal velocity (vertical velocity will be handled by jumping/gravity)
     if (xVelocity !== player.velocity.x) {
       Matter.Body.setVelocity(player, { x: xVelocity, y: player.velocity.y });
     }
 
-    // Check if the player is grounded by detecting collisions with the ground or static bodies
     const allCollisions = Matter.Query.collides(
       player,
       Matter.Composite.allBodies(engine.world)
     );
     isGrounded = allCollisions.some(
       (collision) => collision.bodyB.isStatic || collision.bodyA.isStatic
-    ); // The player is grounded if colliding with a static body
+    );
 
-    requestAnimationFrame(updatePlayerMovement); // Loop the update
+    requestAnimationFrame(updatePlayerMovement);
   };
 
-  // Attach event listeners
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
 
-  // Start the movement update loop
   updatePlayerMovement();
 
-  // Cleanup function to remove event listeners
   return () => {
     window.removeEventListener("keydown", handleKeyDown);
     window.removeEventListener("keyup", handleKeyUp);

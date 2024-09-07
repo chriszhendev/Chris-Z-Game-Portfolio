@@ -6,7 +6,9 @@ import { handlePlayerMovement } from "../player/playerController";
 
 const MatterJSScene: React.FC = () => {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const playerImgRef = useRef<HTMLDivElement>(null);
   const [player, setPlayer] = useState<Matter.Body | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     const Engine = Matter.Engine,
@@ -45,7 +47,13 @@ const MatterJSScene: React.FC = () => {
     Runner.run(runner, engine);
 
     // Handle player movement
-    const cleanupPlayerControls = handlePlayerMovement(playerBody, engine);
+    const cleanupPlayerControls = handlePlayerMovement(
+      playerBody,
+      engine,
+      (isFlipped: boolean) => {
+        setIsFlipped(isFlipped);
+      }
+    );
 
     // Function to check if the player is outside the screen bounds and reposition it
     const checkAndTeleportPlayer = () => {
@@ -75,9 +83,24 @@ const MatterJSScene: React.FC = () => {
         }
       }
     };
+    const updatePlayerImgPosition = () => {
+      if (playerBody && playerImgRef.current) {
+        const playerX = playerBody.position.x;
+        const playerY = playerBody.position.y;
+
+        // Get the dimensions of the player image element
+        const imgWidth = playerImgRef.current.offsetWidth;
+        const imgHeight = playerImgRef.current.offsetHeight;
+
+        // Update the position to center the image relative to the player
+        playerImgRef.current.style.left = `${playerX - imgWidth / 2}px`;
+        playerImgRef.current.style.top = `${playerY - imgHeight / 2}px`;
+      }
+    };
 
     // Check player position continuously
     const update = () => {
+      updatePlayerImgPosition();
       checkAndTeleportPlayer(); // Continuously check if player is off-screen
       requestAnimationFrame(update); // Keep checking every frame
     };
@@ -111,6 +134,27 @@ const MatterJSScene: React.FC = () => {
   return (
     <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
       <div ref={sceneRef} className="w-full h-full" />
+      <div
+        ref={playerImgRef}
+        className="absolute w-[100px] h-[150px]"
+        style={{
+          left: "0", // Initial position, will be updated by JS
+          top: "0", // Initial position, will be updated by JS
+        }}
+      >
+        <div className="w-full h-full flex items-center justify-center">
+          <img
+            src="/images/cright.png"
+            style={{ transform: isFlipped ? "scaleX(-1)" : "scaleX(1)" }}
+            alt="Player"
+            className="w-auto h-full object-fit"
+          />
+        </div>
+        <div className="flex justify-center items-center flex-col text-white ">
+          <div>Chris Zhen</div>
+          <div className="whitespace-nowrap">Fullstack Developer</div>
+        </div>
+      </div>
     </div>
   );
 };
