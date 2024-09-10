@@ -7,28 +7,30 @@ const others = ["Git", "Postgres", "MongoDB", "Wordpress"];
 
 function createCubeRow(
   objList: string[],
-  x: number,
+  startX: number,
   y: number,
   gap: number,
   engine: Matter.Engine
 ) {
-  const totalWidth = objList.length * (100 + gap) - gap; // Calculate total width of all objects and gaps
-  const startX = x - totalWidth / 2; // Start X position to center the row
+  const smallCubeSize = 30; // Size of the small cubes
+  const interactiveBlockWidth = smallCubeSize; // Interactive block width (adjust based on design)
+  const interactiveBlockHeight = 5; // Height of interactive block
 
+  // Loop through the object list and calculate the position for each cube
   objList.forEach((obj, index) => {
     // Calculate X position for each block/cube based on index and gap
-    const blockX = startX + index * (100 + gap);
+    const blockX = startX + index * (smallCubeSize + gap);
 
     // Create the interactive block
     const interactiveBlock = Matter.Bodies.rectangle(
       blockX,
-      y + 100, // Position for interactive block (below small cube)
-      100,
-      50,
+      y + interactiveBlockHeight + smallCubeSize / 2, // Position for interactive block (below small cube)
+      interactiveBlockWidth,
+      interactiveBlockHeight,
       {
         isStatic: true,
-        label: `interactiveBlock`, // Give each block a unique label based on the string
-        render: { fillStyle: "blue" },
+        label: `interactiveBlock`, // Give each block a unique label
+        render: { fillStyle: "rgba(0, 0, 0, 0)" },
       }
     );
 
@@ -36,12 +38,12 @@ function createCubeRow(
     const smallCube = Matter.Bodies.rectangle(
       blockX,
       y, // Position for small cube
-      60,
-      60,
+      smallCubeSize, // Width of the small cube
+      smallCubeSize, // Height of the small cube
       {
         isStatic: false,
         label: `smallCube-${obj}`, // Give each small cube a unique label based on the string
-        render: { fillStyle: "red" },
+        render: { fillStyle: "rgba(0, 0, 0, 0)" },
       }
     );
 
@@ -75,9 +77,9 @@ export const createLevel = (engine: Matter.Engine) => {
   // Create ground and walls
   const ground = Matter.Bodies.rectangle(
     screenWidth / 2,
-    screenHeight + 100,
+    screenHeight + 200,
     screenWidth,
-    400,
+    600,
     { isStatic: true, label: "ground" }
   );
   const leftWall = Matter.Bodies.rectangle(
@@ -98,9 +100,13 @@ export const createLevel = (engine: Matter.Engine) => {
     { isStatic: true, label: "wall" }
   );
 
-  createCubeRow(frontEnd, screenWidth / 2, screenHeight / 2, 50, engine);
-  createCubeRow(backEnd, screenWidth / 2, screenHeight / 2 - 150, 50, engine);
-  createCubeRow(others, screenWidth / 2, screenHeight / 2 - 300, 50, engine);
+  function createSkillLevel() {
+    createCubeRow(frontEnd, 250, screenHeight - 325, 20, engine);
+    createCubeRow(backEnd, 250, screenHeight - 260, 20, engine);
+    createCubeRow(others, 250, screenHeight - 195, 20, engine);
+  }
+
+  createSkillLevel();
 
   // Add objects to the world
   Matter.Composite.add(engine.world, [ground, leftWall, rightWall]);

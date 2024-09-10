@@ -1,14 +1,17 @@
 import Matter from "matter-js";
+import { AppDispatch } from "../store/store";
+import { setPlayerState } from "../store/player";
 
 export const handlePlayerMovement = (
   player: Matter.Body,
   engine: Matter.Engine,
-  flipPlayer: (isFlipped: boolean) => void // Pass the flip callback
+  dispatch: AppDispatch // Accept dispatch as a parameter
 ) => {
   const velocity = 20;
   const jumpVelocity = -35;
   const keysPressed: { [key: string]: boolean } = {};
   let isGrounded = false;
+  let flipped = false;
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!player) return;
@@ -33,26 +36,36 @@ export const handlePlayerMovement = (
 
     if (keysPressed["ArrowLeft"] || keysPressed["a"] || keysPressed["A"]) {
       xVelocity = -velocity;
-      flipPlayer(true); // Flip player when moving left
+      flipped = true;
     } else if (
       keysPressed["ArrowRight"] ||
       keysPressed["d"] ||
       keysPressed["D"]
     ) {
       xVelocity = velocity;
-      flipPlayer(false); // Reset flip when moving right
+      flipped = false;
     }
 
     if (xVelocity !== player.velocity.x) {
       Matter.Body.setVelocity(player, { x: xVelocity, y: player.velocity.y });
     }
 
+    // Check if the player is grounded
     const allCollisions = Matter.Query.collides(
       player,
       Matter.Composite.allBodies(engine.world)
     );
     isGrounded = allCollisions.some(
       (collision) => collision.bodyB.isStatic || collision.bodyA.isStatic
+    );
+
+    // Dispatch the player state to Redux
+    dispatch(
+      setPlayerState({
+        x: player.position.x,
+        y: player.position.y,
+        facingLeft: flipped, // Set direction based on movement
+      })
     );
 
     requestAnimationFrame(updatePlayerMovement);

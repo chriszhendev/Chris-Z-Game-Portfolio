@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import blockReducer from "./blocks";
+import playerReducer from "./player";
+import cubeReducer from "./cubes";
 
 export const store = configureStore({
   reducer: {
-    blocks: blockReducer,
+    player: playerReducer,
+    cubes: cubeReducer,
   },
 });
 

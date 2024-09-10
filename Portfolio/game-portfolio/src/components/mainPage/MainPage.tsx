@@ -8,11 +8,15 @@ import {
   stopMatterEngine,
 } from "../../matterjs/createMatterEngine";
 import Matter from "matter-js";
+import Player from "../player/Player";
+import { useAppDispatch } from "../../store/hooks";
+import CubeComponents from "../cubeComponent/CubeComponents";
+import BackgroundContainer from "../background/BackgroundContainer";
 
 export default function MainPage() {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const playerImgRef = useRef<HTMLDivElement>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const dispatch = useAppDispatch();
+  const [matterEngine, setMatterEngine] = useState<Matter.Engine | null>(null);
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -23,29 +27,20 @@ export default function MainPage() {
     // Create player and level
     const player = createPlayer();
     createLevel(engine); // Initial level creation
+    setMatterEngine(engine);
     Matter.Composite.add(engine.world, player);
 
     // Set up player controls
     const cleanupPlayerControls = handlePlayerMovement(
       player,
       engine,
-      (isFlipped) => setIsFlipped(isFlipped)
+      dispatch
     );
 
     // Set up collision events
     setupCollisionEvents(engine);
 
-    // Handle player repositioning, etc. (same logic as before)
-    const updatePlayerImgPosition = () => {
-      if (player && playerImgRef.current) {
-        const { x, y } = player.position;
-        playerImgRef.current.style.left = `${x - 50}px`;
-        playerImgRef.current.style.top = `${y - 75}px`;
-      }
-    };
-
     const update = () => {
-      updatePlayerImgPosition();
       requestAnimationFrame(update);
     };
     update();
@@ -54,7 +49,7 @@ export default function MainPage() {
     const handleResize = () => {
       render.canvas.width = window.innerWidth;
       render.canvas.height = window.innerHeight;
-      createLevel(engine); // Recreate the level when the window is resized
+      createLevel(engine);
     };
 
     window.addEventListener("resize", handleResize);
@@ -65,32 +60,14 @@ export default function MainPage() {
       cleanupPlayerControls();
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
       <div ref={sceneRef} className="w-full h-full" />
-      <div
-        ref={playerImgRef}
-        className="absolute w-[100px] h-[150px]"
-        style={{
-          left: "0",
-          top: "0",
-        }}
-      >
-        <div className="w-full h-full flex items-center justify-center">
-          <img
-            src="/images/cright.png"
-            style={{ transform: isFlipped ? "scaleX(-1)" : "scaleX(1)" }}
-            alt="Player"
-            className="w-auto h-full object-fit"
-          />
-        </div>
-        <div className="flex justify-center items-center flex-col text-white ">
-          <div>Chris Zhen</div>
-          <div className="whitespace-nowrap">Fullstack Developer</div>
-        </div>
-      </div>
+      <BackgroundContainer />
+      <Player />
+      {matterEngine !== null ? <CubeComponents engine={matterEngine} /> : null}
     </div>
   );
 }
