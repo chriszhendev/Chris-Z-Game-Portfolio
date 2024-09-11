@@ -42,7 +42,7 @@ export default function CubeComponents({ engine }: CubeComponentsProps) {
   }, [engine, dispatch]);
 
   return (
-    <div className="absolute w-full h-full">
+    <>
       {/* Render SingleCube for each cube */}
       {cubes.map((cube) => (
         <SingleCube
@@ -53,6 +53,6 @@ export default function CubeComponents({ engine }: CubeComponentsProps) {
           angle={cube.angle}
         />
       ))}
-    </div>
+    </>
   );
 }

@@ -9,36 +9,16 @@ export default function StickyHeader() {
         </a>
         <nav className="flex-row gap-[20px] items-center justify-center hidden lg:flex">
           <div className="text-fontWhite hover:text-secondaryColor font-medium fade-down-enter">
-            <a href="#work">
-              <span className="text-secondaryColor font-bold mr-[4px]">
-                01.
-              </span>
-              Work
-            </a>
+            <a href="#work">Work</a>
           </div>
           <div className="text-fontWhite hover:text-secondaryColor font-medium fade-down-enter">
-            <a href="#projects">
-              <span className="text-secondaryColor font-bold mr-[4px]">
-                02.
-              </span>
-              Projects
-            </a>
+            <a href="#projects">Projects</a>
           </div>
           <div className="text-fontWhite hover:text-secondaryColor font-medium fade-down-enter">
-            <a href="#about">
-              <span className="text-secondaryColor font-bold mr-[4px]">
-                03.
-              </span>
-              About Me
-            </a>
+            <a href="#about">About Me</a>
           </div>
           <div className="text-fontWhite hover:text-secondaryColor font-medium fade-down-enter">
-            <a href="#contact">
-              <span className="text-secondaryColor font-bold mr-[4px]">
-                04.
-              </span>
-              Contact
-            </a>
+            <a href="#contact">Contact</a>
           </div>
           <div className="fade-down-enter">
             <a

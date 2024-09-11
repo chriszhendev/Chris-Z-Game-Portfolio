@@ -1,9 +1,39 @@
-import React from "react";
-import { useAppSelector } from "../../store/hooks";
+import React, { useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import Matter from "matter-js";
+import { createPlayer } from "../../matterjs/createPlayer";
+import { handlePlayerMovement } from "../../matterjs/handlePlayerMovement";
 
-export default function Player() {
+interface PlayerProps {
+  engine: Matter.Engine;
+}
+
+export default function Player({ engine }: PlayerProps) {
   // Access player state from Redux using the custom hook
   const { x, y, facingLeft } = useAppSelector((state) => state.player.player);
+  const dispatch = useAppDispatch();
+  const playerRef = useRef<Matter.Body | null>(null);
+
+  useEffect(() => {
+    const player = createPlayer();
+    playerRef.current = player;
+    Matter.Composite.add(engine.world, player);
+
+    // Set up player controls
+    const cleanupPlayerControls = handlePlayerMovement(
+      player,
+      engine,
+      dispatch
+    );
+
+    // Cleanup on unmount
+    return () => {
+      cleanupPlayerControls();
+      if (playerRef.current) {
+        Matter.Composite.remove(engine.world, playerRef.current);
+      }
+    };
+  }, [dispatch, engine]);
 
   return (
     <div

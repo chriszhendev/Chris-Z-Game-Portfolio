@@ -7,7 +7,6 @@ export const createPlayer = (): Matter.Body => {
     restitution: 0,
     friction: 1,
     inertia: Infinity,
-    render: { fillStyle: "rgba(0, 0, 0, 0)" },
   });
 
   Matter.Body.setAngle(player, 0);

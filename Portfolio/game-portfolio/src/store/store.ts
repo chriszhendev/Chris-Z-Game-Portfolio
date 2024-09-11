@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import playerReducer from "./player";
 import cubeReducer from "./cubes";
+import levelReducer from "./levels";
 
 export const store = configureStore({
   reducer: {
     player: playerReducer,
     cubes: cubeReducer,
+    level: levelReducer,
   },
 });
 
