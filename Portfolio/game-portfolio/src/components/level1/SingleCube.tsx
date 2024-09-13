@@ -4,10 +4,9 @@ type SingleCubeProps = {
   label: string;
   x: number;
   y: number;
-  angle: number;
 };
 
-export default function SingleCube({ label, x, y, angle }: SingleCubeProps) {
+export default function SingleCube({ label, x, y }: SingleCubeProps) {
   // Extract the cube name from the label (e.g., smallCube-html)
   const cubeName = label.split("smallCube-")[1];
 

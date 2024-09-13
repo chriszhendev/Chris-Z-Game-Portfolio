@@ -41,7 +41,6 @@ function createBaseLevel(engine: Matter.Engine) {
     screenHeight,
     { isStatic: true, label: "wall-right" }
   );
-  console.log("CREATED WALL!");
   Matter.World.add(engine.world, [ground, leftWall, rightWall]);
 }
 

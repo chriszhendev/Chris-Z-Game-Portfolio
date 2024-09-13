@@ -9,6 +9,7 @@ import {
 import { setupCollisionEvents } from "../../matterjs/handleCollisionEvent";
 import { createLevel } from "../../matterjs/createLevel";
 import Player from "../player/Player";
+import Level1 from "../level1/Level1";
 
 export default function MatterCanvas() {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -51,8 +52,18 @@ export default function MatterCanvas() {
     };
   }, [dispatch, currentLevel]);
 
+  const renderLevel = () => {
+    switch (currentLevel) {
+      case 0:
+        return <Level1 engine={matterEngine!} />;
+      default:
+        return <div>Unknown Level</div>;
+    }
+  };
+
   return (
     <div ref={sceneRef} className="w-full h-full">
+      {matterEngine && renderLevel()}
       {matterEngine && <Player engine={matterEngine} />}
     </div>
   );

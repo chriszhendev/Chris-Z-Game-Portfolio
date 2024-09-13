@@ -3,7 +3,7 @@ import React from "react";
 export default function BackgroundContainer() {
   return (
     <div className="w-full h-full absolute inset-0">
-      <div className="w-full h-full flex flex-col p-[100px]">
+      {/* <div className="w-full h-full flex flex-col p-[100px]">
         <div className="py-16">
           <>
             <h1 className="text-7xl font-bold mb-2">Fullstack Developer</h1>
@@ -27,7 +27,7 @@ export default function BackgroundContainer() {
             <div>Others:</div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

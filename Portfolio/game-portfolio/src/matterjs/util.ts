@@ -38,9 +38,59 @@ export function createCubeRow(
     );
 
     Matter.Composite.add(engine.world, [interactiveBlock, smallCube]);
-
-    console.log(
-      `Created interactive block and small cube for ${obj} at (${blockX}, ${y})`
-    );
   });
 }
+
+// example of fill style { fillStyle: "rgba(0, 0, 0, 0)" }
+export function createMatterCube(
+  x: number,
+  y: number,
+  height: number,
+  width: number,
+  isStatic: boolean,
+  label?: string,
+  fillColor?: string
+) {
+  const block = Matter.Bodies.rectangle(x, y, width, height, {
+    isStatic: isStatic,
+    label: label ? label : "unknownBlock",
+    render: { fillStyle: fillColor ? fillColor : "rgba(255, 0, 0)" },
+  });
+  return block;
+}
+
+// export function createCubeRowWithInteractiveBlock(
+//   objList: string[],
+//   startX: number,
+//   y: number,
+//   gap: number,
+//   engine: Matter.Engine,
+//   size: number
+// ) {
+//   const interactiveBlockHeight = 5;
+//   const objectList = [];
+//   objList.forEach((obj, index) => {
+//     const blockX = startX + index * (size + gap);
+//     const interactiveBlock = Matter.Bodies.rectangle(
+//       blockX,
+//       y + interactiveBlockHeight + size / 2,
+//       size,
+//       interactiveBlockHeight,
+//       {
+//         isStatic: true,
+//         label: `interactiveBlock`,
+//         render: { fillStyle: "rgba(0, 255, 0)" },
+//       }
+//     );
+
+//     const smallCube = Matter.Bodies.rectangle(blockX, y, size, size, {
+//       isStatic: false,
+//       label: `smallCube-${obj}`,
+//       render: { fillStyle: "rgba(255, 0, 0)" },
+//     });
+
+//     objectList.push([interactiveBlock, smallCube]);
+//   }
+//   return objList;
+// );
+// }
