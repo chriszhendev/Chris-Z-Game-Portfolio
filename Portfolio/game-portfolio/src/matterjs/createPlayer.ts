@@ -2,7 +2,13 @@
 import Matter from "matter-js";
 
 export const createPlayer = (): Matter.Body => {
-  const player = Matter.Bodies.rectangle(1200, 550, 60, 150, {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+
+  const xPosition = screenWidth - 400;
+  const yPosition = screenHeight - 400;
+
+  const player = Matter.Bodies.rectangle(xPosition, yPosition, 60, 150, {
     label: "player",
     restitution: 0,
     friction: 1,

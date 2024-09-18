@@ -58,39 +58,3 @@ export function createMatterCube(
   });
   return block;
 }
-
-// export function createCubeRowWithInteractiveBlock(
-//   objList: string[],
-//   startX: number,
-//   y: number,
-//   gap: number,
-//   engine: Matter.Engine,
-//   size: number
-// ) {
-//   const interactiveBlockHeight = 5;
-//   const objectList = [];
-//   objList.forEach((obj, index) => {
-//     const blockX = startX + index * (size + gap);
-//     const interactiveBlock = Matter.Bodies.rectangle(
-//       blockX,
-//       y + interactiveBlockHeight + size / 2,
-//       size,
-//       interactiveBlockHeight,
-//       {
-//         isStatic: true,
-//         label: `interactiveBlock`,
-//         render: { fillStyle: "rgba(0, 255, 0)" },
-//       }
-//     );
-
-//     const smallCube = Matter.Bodies.rectangle(blockX, y, size, size, {
-//       isStatic: false,
-//       label: `smallCube-${obj}`,
-//       render: { fillStyle: "rgba(255, 0, 0)" },
-//     });
-
-//     objectList.push([interactiveBlock, smallCube]);
-//   }
-//   return objList;
-// );
-// }

@@ -9,7 +9,11 @@ type LevelMap = {
 const levelMap: LevelMap = { 0: createLevelOne };
 
 function clearLevel(engine: Matter.Engine) {
-  Matter.Composite.clear(engine.world, false);
+  const allBodies = Matter.Composite.allBodies(engine.world);
+
+  const nonPlayerBodies = allBodies.filter((body) => body.label !== "player");
+
+  Matter.Composite.remove(engine.world, nonPlayerBodies, false);
 }
 
 // Create ground and walls
@@ -48,5 +52,9 @@ export function createLevel(engine: Matter.Engine, levelIdx: number): void {
   if (!engine || !(levelIdx in levelMap)) return;
   clearLevel(engine);
   createBaseLevel(engine);
-  levelMap[levelIdx](engine);
+  if (levelMap[levelIdx]) {
+    levelMap[levelIdx](engine);
+  } else {
+    console.warn(`Level ${levelIdx} is not defined in the levelMap.`);
+  }
 }

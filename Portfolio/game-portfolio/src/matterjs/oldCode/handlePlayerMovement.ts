@@ -1,17 +1,17 @@
 import Matter from "matter-js";
-// import { AppDispatch } from "../store/store";
+import { AppDispatch } from "../store/store";
 import { setPlayerState } from "../store/player";
 
 export const handlePlayerMovement = (
   player: Matter.Body,
   engine: Matter.Engine,
-  setFacingLeft: (facing: boolean) => void
-  //   dispatch: AppDispatch
+  dispatch: AppDispatch // Accept dispatch as a parameter
 ) => {
   const velocity = 20;
   const jumpVelocity = -35;
   const keysPressed: { [key: string]: boolean } = {};
   let isGrounded = false;
+  let flipped = false;
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!player) return;
@@ -36,14 +36,14 @@ export const handlePlayerMovement = (
 
     if (keysPressed["ArrowLeft"] || keysPressed["a"] || keysPressed["A"]) {
       xVelocity = -velocity;
-      setFacingLeft(true);
+      flipped = true;
     } else if (
       keysPressed["ArrowRight"] ||
       keysPressed["d"] ||
       keysPressed["D"]
     ) {
       xVelocity = velocity;
-      setFacingLeft(false);
+      flipped = false;
     }
 
     if (xVelocity !== player.velocity.x) {
@@ -60,13 +60,13 @@ export const handlePlayerMovement = (
     );
 
     // Dispatch the player state to Redux
-    // dispatch(
-    //   setPlayerState({
-    //     x: player.position.x,
-    //     y: player.position.y,
-    //     facingLeft: flipped, // Set direction based on movement
-    //   })
-    // );
+    dispatch(
+      setPlayerState({
+        x: player.position.x,
+        y: player.position.y,
+        facingLeft: flipped, // Set direction based on movement
+      })
+    );
 
     requestAnimationFrame(updatePlayerMovement);
   };

@@ -10,6 +10,7 @@ import { setupCollisionEvents } from "../../matterjs/handleCollisionEvent";
 import { createLevel } from "../../matterjs/createLevel";
 import Player from "../player/Player";
 import Level1 from "../level1/Level1";
+import Level2 from "../level2/Level2";
 
 export default function MatterCanvas() {
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ export default function MatterCanvas() {
     setMatterEngine(engine);
 
     // Set up collision events
-    setupCollisionEvents(engine);
+    setupCollisionEvents(engine, dispatch);
 
     const update = () => {
       requestAnimationFrame(update);
@@ -56,6 +57,10 @@ export default function MatterCanvas() {
     switch (currentLevel) {
       case 0:
         return <Level1 engine={matterEngine!} />;
+      case 1:
+        return <Level2 engine={matterEngine!} />;
+      case 2:
+        return <div>Level 2</div>;
       default:
         return <div>Unknown Level</div>;
     }

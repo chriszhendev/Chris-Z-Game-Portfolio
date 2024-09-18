@@ -17,3 +17,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.heading-1 {
+  font-size: clamp(40px, 8vw, 74px);
+  line-height: 1.1;
+}
+
+.body-1 {
+  font-size: clamp(12px, 8vw, 16px);
+}

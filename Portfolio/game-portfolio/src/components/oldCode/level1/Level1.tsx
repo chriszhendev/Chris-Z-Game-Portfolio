@@ -40,9 +40,9 @@ export default function Level1({ engine }: Props) {
     <>
       <div className="absolute w-[100vw] h-[100vh] inset-0">
         <div className="pl-[100px] pt-[150px]">
-          <h1 className="text-7xl font-bold mb-2">Fullstack Developer</h1>
+          <h1 className="font-bold mb-2 heading-1">Fullstack Developer</h1>
 
-          <p className="mb-4 opacity-50 max-w-[800px]">
+          <p className="mb-4 opacity-50 max-w-[800px] body-1">
             Hi, I'm Chris, a full stack web developer. This site, built with
             React, TypeScript, and Matter.js, might seem a bit over the top, but
             I believe it showcases my ability to handle complex logic and

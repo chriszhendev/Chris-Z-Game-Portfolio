@@ -1,13 +1,15 @@
 import React from "react";
-import MainPage from "../components/mainPage/MainPage";
+import GameContainer from "../components/gameContainer/GameContainer";
 import StickyHeader from "../components/header/StickyHeader";
-import GamefolioContainer from "../components/gameFolio/GamefolioContainer";
 
 export default function Home() {
   return (
-    <div id="gameContainer" className="relative w-[100vw] h-[100vh]">
+    <div
+      id="gameContainer"
+      className="relative w-[100vw] h-[100vh] overflow-hidden"
+    >
       <StickyHeader />
-      <GamefolioContainer />
+      <GameContainer />
     </div>
   );
 }
