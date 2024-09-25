@@ -1,4 +1,5 @@
 import React from "react";
+import SkillCube from "../matterCubes/SkillCube";
 
 type Props = {
   engine: Matter.Engine;
@@ -9,6 +10,8 @@ type Props = {
 };
 
 export default function Level0({ engine, windowSize }: Props) {
+  const cubeSize = 30;
+
   return (
     <div className="flex items-center w-full h-full">
       <div className="px-[100px]">
@@ -24,7 +27,47 @@ export default function Level0({ engine, windowSize }: Props) {
         <div className="">
           <h2 className="text-5xl font-bold mb-8">Current Tech Stack</h2>
           <div className="flex flex-col text-2xl gap-8">
-            <div id="front-end">Front End:</div>
+            <div className="flex flex-row items-center">
+              <div className="w-[140px]">Front End:</div>
+              <div className="flex flex-row gap-4">
+                <SkillCube
+                  width={30}
+                  height={30}
+                  imgsrc="images/HTML.png"
+                  label="HTML"
+                  engine={engine}
+                />
+                <SkillCube
+                  width={30}
+                  height={30}
+                  imgsrc="images/CSS.png"
+                  label="CSS"
+                  engine={engine}
+                />
+                {/* <SkillCube
+                  width={30}
+                  height={30}
+                  imgsrc="images/HTML.png"
+                  label="Javascript"
+                  engine={engine}
+                />
+                <SkillCube
+                  width={30}
+                  height={30}
+                  imgsrc="images/HTML.png"
+                  label="React"
+                  engine={engine}
+                />
+                <SkillCube
+                  width={30}
+                  height={30}
+                  imgsrc="images/HTML.png"
+                  label="Typescript"
+                  engine={engine}
+                /> */}
+              </div>
+            </div>
+
             <div id="back-end">Back End:</div>
             <div id="others">Others:</div>
           </div>

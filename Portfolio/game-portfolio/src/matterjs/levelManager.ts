@@ -31,6 +31,22 @@ export function createBaseWorld() {
   return [ground, leftWall, rightWall];
 }
 
+export function createMatterBlock(
+  width: number,
+  height: number,
+  x: number,
+  y: number,
+  label: string,
+  isStactic?: boolean
+) {
+  const block = Matter.Bodies.rectangle(x, y, width, height, {
+    isStatic: isStactic || false,
+    label: label,
+  });
+
+  return block;
+}
+
 // function clearLevel(engine: Matter.Engine) {
 //     const allBodies = Matter.Composite.allBodies(engine.world);
 
